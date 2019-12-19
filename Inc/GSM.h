@@ -9,28 +9,29 @@
 //    ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
 //    WYNIKLE Z JEGO WYKORZYSTANIA.
 //******************************************************************************
-#ifndef __PMIK_H
-#define __PMIK_H
+#ifndef __GSM_H
+#define __GSM_H
 
-#include "main.h"
+//#include "main.h"
 #include "stm32f4xx_hal.h"
 
-#define KeyGPIO GPIOB
-#define COL1 COL1_Pin
-#define COL2 COL2_Pin
-#define COL3 COL3_Pin
-#define ROW1 ROW1_Pin
-#define ROW2 ROW2_Pin
-#define ROW3 ROW3_Pin
-#define ROW4 ROW4_Pin
+unsigned char buffer[100];
+unsigned char enter;
+unsigned char ctrlz;
+unsigned char GSM_buffer[300];
+uint8_t GSM_buffer_index;
+unsigned char GSM_Listener;
+UART_HandleTypeDef* huart;
 
-#define DEBOUNCE_TIME  10
+void GSM_Init(UART_HandleTypeDef*);
+void GSM_Listen(void);
+void GSM_Send(unsigned char*);
+uint8_t GSM_CheckResponse(unsigned char*);
+void GSM_SendCommandAndWaitForResponse(unsigned char*, unsigned char*);
 
-char keyboard_read(void);
-uint8_t PIN_write(char);
-void PIN_clear(void);
-void PIN_display(void);
-void PIN_clear_display(void);
-uint8_t PIN_check(void);
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef*);
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef*);
 
-#endif /* __PMIK_H */
+
+
+#endif /* __GSM_H */

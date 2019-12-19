@@ -9,6 +9,8 @@
 //    ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
 //    WYNIKLE Z JEGO WYKORZYSTANIA.
 //******************************************************************************
+#ifndef __LCD_HD44780_H
+#define __LCD_HD44780_H
 #include "main.h"
 
 #define LCD_GPIO GPIOC
@@ -67,3 +69,5 @@ void LCD_GoTo(unsigned char x, unsigned char y);
 void LCD_WriteBinary(unsigned int var, unsigned char bitCount);
 void LCD_SetUserChar (unsigned char chrNum, unsigned char n, const unsigned char *p);
 void LCD_Clear(void);
+
+#endif /* __LCD_HD44780_H */

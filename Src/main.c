@@ -26,6 +26,8 @@
 #include "lcd_hd44780.h"
 #include "PMIK.h"
 #include "alarm.h"
+#include "GSM.h"
+
 
 /* USER CODE END Includes */
 
@@ -45,6 +47,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+RTC_HandleTypeDef hrtc;
+
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
@@ -53,7 +57,8 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+RTC_DateTypeDef sdatestructureget;
+RTC_TimeTypeDef stimestructureget;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,14 +68,15 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM5_Init(void);
+static void MX_RTC_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void display_date(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int i = 0;
 /* USER CODE END 0 */
 
 /**
@@ -83,7 +89,9 @@ int main(void)
 
   /* USER CODE END 1 */
   
+
   /* MCU Configuration--------------------------------------------------------*/
+
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -104,22 +112,54 @@ int main(void)
   MX_TIM4_Init();
   MX_USART1_UART_Init();
   MX_TIM5_Init();
+  MX_RTC_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  DISPLAY = YES;
+  DISPLAY = NO;
   CHECK_PIN = NO;
   CORRECT_PIN = NO;
+  DATE = YES;
 
   LCD_Initialize();
   buzzer_off();
-
+  GSM_Init(&huart1);
+  GSM_SendSMS("799285260", "Alarm is active...");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+//
+//	  char enter= 10;
+//	  char ctrlz= 26;
+//
+//
+//	  HAL_UART_Transmit(&huart1, &enter, 1, 100);
+//
+//	  HAL_Delay(5000);
+//
+//	  //char command1[] = "at+cmgf=1"
+//	  HAL_UART_Transmit(&huart1,"at+cmgf=1", 9, 100);
+//
+//	  HAL_UART_Transmit(&huart1, &enter, 1, 100);
+//
+//	  HAL_Delay(5000);
+//
+//	  HAL_UART_Transmit(&huart1,"at+cmgs=\"798304694\"", 19, 100);
+//
+//	  HAL_UART_Transmit(&huart1, &enter, 1, 100);
+//
+//	  HAL_Delay(5000);
+//
+//	  HAL_UART_Transmit(&huart1,"elo ziom", 8, 100);
+//
+//	  HAL_UART_Transmit(&huart1, &ctrlz, 1, 100);
+
+//	  HAL_Delay(5000);
+
 // Default screen to display
 	  if(DISPLAY == YES){
 		  PIN_display();
@@ -133,7 +173,7 @@ int main(void)
      		  PIN_clear_display();
      		  CORRECT_PIN = YES;
      		 HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
-     		 HAL_UART_Transmit(&huart1, (unsigned char *)"Poprawny PIN\n\r", 15, 1000);
+     		 //HAL_UART_Transmit(&huart1, (unsigned char *)"Poprawny PIN\n\r", 15, 1000);
 
 		  }else{
 			  LCD_Clear();
@@ -175,6 +215,7 @@ void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage 
   */
@@ -182,9 +223,10 @@ void SystemClock_Config(void)
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
@@ -208,6 +250,92 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+
+  /* USER CODE END RTC_Init 0 */
+
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+  RTC_AlarmTypeDef sAlarm = {0};
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+  /** Initialize RTC Only 
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.AsynchPrediv = 127;
+  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /* USER CODE BEGIN Check_RTC_BKUP */
+    
+  /* USER CODE END Check_RTC_BKUP */
+
+  /** Initialize RTC and set the Time and Date 
+  */
+  sTime.Hours = 0x9;
+  sTime.Minutes = 0x0;
+  sTime.Seconds = 0x0;
+  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+  sDate.Month = RTC_MONTH_DECEMBER;
+  sDate.Date = 0x1;
+  sDate.Year = 0x19;
+
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Enable the Alarm A 
+  */
+  sAlarm.AlarmTime.Hours = 0x0;
+  sAlarm.AlarmTime.Minutes = 0x0;
+  sAlarm.AlarmTime.Seconds = 0x0;
+  sAlarm.AlarmTime.SubSeconds = 0x0;
+  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+  sAlarm.AlarmDateWeekDay = 0x1;
+  sAlarm.Alarm = RTC_ALARM_A;
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+  /* USER CODE END RTC_Init 2 */
+
 }
 
 /**
@@ -488,6 +616,35 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handle){
+	if(handle == &hrtc){
+		if(DATE==YES){
+		display_date();
+		}
+	}
+}
+
+static void display_date(){
+  /* Get the RTC current Time */
+  HAL_RTC_GetTime(&hrtc, &stimestructureget, RTC_FORMAT_BIN);
+  /* Get the RTC current Date */
+  HAL_RTC_GetDate(&hrtc, &sdatestructureget, RTC_FORMAT_BIN);
+
+
+  /* Display time Format: hh:mm:ss */
+  unsigned char time[17];
+  sprintf((char*)time,"    %02d:%02d:%02d    ", stimestructureget.Hours, stimestructureget.Minutes, stimestructureget.Seconds);
+  /* Display date Format: dd-mm-yy */
+  unsigned char date[17];
+  sprintf((char*)date,"   %02d-%02d-%02d   ",sdatestructureget.Date, sdatestructureget.Month, 2000 + sdatestructureget.Year);
+
+  LCD_GoTo(0, 1);
+  LCD_WriteText(time);
+  LCD_GoTo(0, 0);
+  LCD_WriteText(date);
+}
 /* USER CODE END 4 */
 
 /**

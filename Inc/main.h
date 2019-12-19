@@ -41,6 +41,7 @@ enum STATE { YES = 1, NO = 0};
 enum STATE DISPLAY;
 enum STATE CHECK_PIN;
 enum STATE CORRECT_PIN;
+enum STATE DATE;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
