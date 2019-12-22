@@ -124,13 +124,35 @@ int main(void)
   LCD_Initialize();
   buzzer_off();
   GSM_Init(&huart1);
-  GSM_SendSMS("799285260", "Alarm is active...");
+  //GSM_SendSMS("799285260", "Alarm is active...");
+
+  char year[2];
+  char month[2];
+  char day[2];
+  char hours[2];
+  char minutes[2];
+  char seconds[2];
+  GSM_GetDate(year, month, day);
+  GSM_GetTime(hours, minutes, seconds);
+
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+  sTime.Hours = atoi(hours);
+  sTime.Minutes = atoi(minutes);
+  sTime.Seconds = atoi(seconds);
+  sDate.Year = atoi(year);
+  sDate.Month = atoi(month);
+  sDate.Date = atoi(day);
+
+  HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+  HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 
 //
 //	  char enter= 10;

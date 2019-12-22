@@ -28,6 +28,10 @@ void GSM_Listen(void);
 void GSM_Send(unsigned char*);
 uint8_t GSM_CheckResponse(unsigned char*);
 void GSM_SendCommandAndWaitForResponse(unsigned char*, unsigned char*);
+void GSM_SendCommandAndCopyResponse(unsigned char*, unsigned char*, unsigned char*, unsigned char*);
+void GSM_GetDate(char*, char*, char*);
+void GSM_GetTime(char*, char*, char*);
+
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef*);
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef*);
