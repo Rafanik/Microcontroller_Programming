@@ -8,6 +8,9 @@
 #include "lcd_hd44780.h"
 #include "alarm.h"
 #include "PMIK.h"
+#include "date_time.h"
+#include "GSM.h"
+#include "main.h"
 
 #define PIN_LENGTH 4
 unsigned char PIN_correct[PIN_LENGTH] = "4555";
@@ -83,6 +86,30 @@ uint8_t PIN_check(){
 	PINCounter=0;
 
 	return 0;
-
-
 }
+
+void date_update_from_GSM(RTC_HandleTypeDef hrtc){
+
+	  char year[2];
+	  char month[2];
+	  char day[2];
+	  char hours[2];
+	  char minutes[2];
+	  char seconds[2];
+	  GSM_GetDate(year, month, day);
+	  GSM_GetTime(hours, minutes, seconds);
+
+	  RTC_TimeTypeDef sTime = {0};
+	  RTC_DateTypeDef sDate = {0};
+	  sTime.Hours = atoi(hours);
+	  sTime.Minutes = atoi(minutes);
+	  sTime.Seconds = atoi(seconds);
+	  sDate.Year = atoi(year);
+	  sDate.Month = atoi(month);
+	  sDate.Date = atoi(day);
+
+	  HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	  HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+}
+
+

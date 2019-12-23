@@ -9,29 +9,25 @@
 //    ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
 //    WYNIKLE Z JEGO WYKORZYSTANIA.
 //******************************************************************************
-#ifndef __PMIK_H
-#define __PMIK_H
+#ifndef __DATE_TIME_H
+#define __DATE_TIME_H
 
 #include "main.h"
 #include "stm32f4xx_hal.h"
 
-#define KeyGPIO GPIOB
-#define COL1 COL1_Pin
-#define COL2 COL2_Pin
-#define COL3 COL3_Pin
-#define ROW1 ROW1_Pin
-#define ROW2 ROW2_Pin
-#define ROW3 ROW3_Pin
-#define ROW4 ROW4_Pin
+unsigned char time[17];
+unsigned char date[17];
 
-#define DEBOUNCE_TIME  10
+RTC_HandleTypeDef* hhrtc;
 
-char keyboard_read(void);
-uint8_t PIN_write(char);
-void PIN_clear(void);
-void PIN_display(void);
-void PIN_clear_display(void);
-uint8_t PIN_check(void);
-void date_update_from_GSM(RTC_HandleTypeDef);
+RTC_DateTypeDef sdatestructureget;
+RTC_TimeTypeDef stimestructureget;
 
-#endif /* __PMIK_H */
+void date_time_init(RTC_HandleTypeDef*);
+void date_get();
+void time_get();
+void date_time_to_display(unsigned char*, unsigned char*);
+//void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *);
+void display_date();
+
+#endif /* __DATE_TIME_H */

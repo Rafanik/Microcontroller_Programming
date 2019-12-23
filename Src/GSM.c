@@ -9,14 +9,7 @@
 
 
 
-void GSM_Init(UART_HandleTypeDef* h){
-	enter = 10;
-	ctrlz= 26;
-	huart = h;
-	GSM_buffer_index = 0;
-	GSM_Listen();
 
-}
 
 void GSM_Send(unsigned char* text){
 
@@ -48,20 +41,16 @@ uint8_t GSM_CheckResponse(unsigned char* response){
 	return 1;
 }
 
-void GSM_SendCommandAndWaitForResponse(unsigned char* command, unsigned char* response){
+uint8_t GSM_SendCommandAndWaitForResponse(unsigned char* command, unsigned char* response){
 	GSM_Send(command);
 
-	if(GSM_CheckResponse(response)){
-		int test = 0;
-		test= 1;
-	}else{
-
-	};
-	/* ewentualna obsluga jak nie znajdzie odp.*/
+	return GSM_CheckResponse(response);
 
 }
+	/* ewentualna obsluga jak nie znajdzie odp.*/
 
-void GSM_SendCommandAndCopyResponse(unsigned char* command, unsigned char* begin, unsigned char* end, unsigned char* response){
+
+uint8_t GSM_SendCommandAndCopyResponse(unsigned char* command, unsigned char* begin, unsigned char* end, unsigned char* response){
 	GSM_Send(command);
 	char* start;
 	char* stop;
@@ -70,8 +59,9 @@ void GSM_SendCommandAndCopyResponse(unsigned char* command, unsigned char* begin
 	int i =0;
 		while(strstr((char*)GSM_buffer, (char*)begin)==NULL ||  strstr((char*)GSM_buffer, (char*)end)==NULL){
 			if(i++>32000){
+			memset(GSM_buffer, 0, sizeof(GSM_buffer));
+			GSM_buffer_index=0;
 			//memset(GSM_buffer, 0, sizeof(GSM_buffer));
-			//GSM_buffer_index=0;
 			return 0;
 			}
 		}
@@ -82,6 +72,27 @@ void GSM_SendCommandAndCopyResponse(unsigned char* command, unsigned char* begin
 	int correction = strlen(begin)*sizeof(unsigned char);
 	start = start + correction;
 	strcpy(response, start);
+
+	memset(GSM_buffer, 0, sizeof(GSM_buffer));
+	GSM_buffer_index=0;
+	int x = 0;
+	return 1;
+}
+
+void GSM_Init(UART_HandleTypeDef* h){
+	enter = 10;
+	ctrlz= 26;
+	huart = h;
+	GSM_buffer_index = 0;
+	GSM_Listen();
+	int i = 0;
+	while(	GSM_SendCommandAndWaitForResponse((unsigned char*)"at", (unsigned char*)"OK") && i<20){
+		++i;
+	};
+	i=0;
+	while(	GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgf=1", (unsigned char*)"OK") && i<20){
+		++i;
+	};
 
 }
 
@@ -122,6 +133,31 @@ void GSM_GetTime(char* hours, char* minutes, char* seconds){
 	  seconds[0]=response[17];
 	  seconds[1]=response[18];
 }
+
+void GSM_ReadSMS(char* number, char* text){
+	  unsigned char response[30];
+	  int i = 0;
+	  int status = 0;
+	  while(	!status && i<20){
+		  status = GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgf=1", (unsigned char*)"OK");
+		  ++i;
+		};
+	  status = 0;
+	  i = 0;
+	  while(!status && i<20){
+		  status = GSM_SendCommandAndCopyResponse("at+cmgr=8", "\"\r\n", "\r\n\r\nOK", text);
+		  ++i;
+	  };
+	  i = 0;
+	  status = 0;
+	  while(!status && i<20){
+		  status = GSM_SendCommandAndCopyResponse("at+cmgr=8", "READ\",\"", "\",\"\",\"", number);
+		  ++i;
+	  };
+
+
+}
+
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *h) {
 

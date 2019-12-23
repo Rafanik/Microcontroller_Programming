@@ -27,6 +27,7 @@
 #include "PMIK.h"
 #include "alarm.h"
 #include "GSM.h"
+#include "date_time.h"
 
 
 /* USER CODE END Includes */
@@ -57,8 +58,7 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-RTC_DateTypeDef sdatestructureget;
-RTC_TimeTypeDef stimestructureget;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,12 +71,13 @@ static void MX_TIM5_Init(void);
 static void MX_RTC_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-static void display_date(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 int i = 0;
+uint8_t dateFlag = 0;
 /* USER CODE END 0 */
 
 /**
@@ -121,31 +122,16 @@ int main(void)
   CORRECT_PIN = NO;
   DATE = YES;
 
+  date_time_init(&hrtc);
   LCD_Initialize();
   buzzer_off();
   GSM_Init(&huart1);
   //GSM_SendSMS("799285260", "Alarm is active...");
+  date_update_from_GSM(hrtc);
+  unsigned char text[40];
+  unsigned char number[40];
+  GSM_ReadSMS(text, number);
 
-  char year[2];
-  char month[2];
-  char day[2];
-  char hours[2];
-  char minutes[2];
-  char seconds[2];
-  GSM_GetDate(year, month, day);
-  GSM_GetTime(hours, minutes, seconds);
-
-  RTC_TimeTypeDef sTime = {0};
-  RTC_DateTypeDef sDate = {0};
-  sTime.Hours = atoi(hours);
-  sTime.Minutes = atoi(minutes);
-  sTime.Seconds = atoi(seconds);
-  sDate.Year = atoi(year);
-  sDate.Month = atoi(month);
-  sDate.Date = atoi(day);
-
-  HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
-  HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -640,33 +626,7 @@ static void MX_GPIO_Init(void)
 
 
 
-void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *handle){
-	if(handle == &hrtc){
-		if(DATE==YES){
-		display_date();
-		}
-	}
-}
 
-static void display_date(){
-  /* Get the RTC current Time */
-  HAL_RTC_GetTime(&hrtc, &stimestructureget, RTC_FORMAT_BIN);
-  /* Get the RTC current Date */
-  HAL_RTC_GetDate(&hrtc, &sdatestructureget, RTC_FORMAT_BIN);
-
-
-  /* Display time Format: hh:mm:ss */
-  unsigned char time[17];
-  sprintf((char*)time,"    %02d:%02d:%02d    ", stimestructureget.Hours, stimestructureget.Minutes, stimestructureget.Seconds);
-  /* Display date Format: dd-mm-yy */
-  unsigned char date[17];
-  sprintf((char*)date,"   %02d-%02d-%02d   ",sdatestructureget.Date, sdatestructureget.Month, 2000 + sdatestructureget.Year);
-
-  LCD_GoTo(0, 1);
-  LCD_WriteText(time);
-  LCD_GoTo(0, 0);
-  LCD_WriteText(date);
-}
 /* USER CODE END 4 */
 
 /**
