@@ -31,7 +31,8 @@ uint8_t GSM_SendCommandAndWaitForResponse(unsigned char*, unsigned char*);
 uint8_t GSM_SendCommandAndCopyResponse(unsigned char*, unsigned char*, unsigned char*, unsigned char*);
 void GSM_GetDate(char*, char*, char*);
 void GSM_GetTime(char*, char*, char*);
-void GSM_ReadSMS(char*, char*);
+void GSM_SendSMS(unsigned char*, unsigned char*);
+uint8_t GSM_ReadSMS(char*, char*);
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef*);

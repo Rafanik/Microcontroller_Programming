@@ -76,8 +76,7 @@ static void MX_TIM3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int i = 0;
-uint8_t dateFlag = 0;
+
 /* USER CODE END 0 */
 
 /**
@@ -94,7 +93,8 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -126,11 +126,14 @@ int main(void)
   LCD_Initialize();
   buzzer_off();
   GSM_Init(&huart1);
-  //GSM_SendSMS("799285260", "Alarm is active...");
   date_update_from_GSM(hrtc);
-  unsigned char text[40];
-  unsigned char number[40];
-  GSM_ReadSMS(text, number);
+  HAL_Delay(1000);
+  GSM_SendSMS("607933865", "Alarm is active...");
+
+
+//unsigned char text[40];
+//unsigned char number[40];
+//  uint8_t sms = GSM_ReadSMS(number, text);
 
   /* USER CODE END 2 */
 
@@ -138,6 +141,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+//	  sms = GSM_ReadSMS(number, text);
+//	  if(sms==1){
+//		  GSM_SendSMS(text, "PIN: 5554");
+//	  }
+
 
 
 //
@@ -168,6 +176,8 @@ int main(void)
 
 //	  HAL_Delay(5000);
 
+
+
 // Default screen to display
 	  if(DISPLAY == YES){
 		  PIN_display();
@@ -193,6 +203,17 @@ int main(void)
 		  CHECK_PIN = NO;
 		  DISPLAY = NO;
 	  }
+// Checking if SMS was received
+	  if(CHECK_SMS == YES && ALARM==NO && DATE==YES){
+	  	check_one_time_PIN();
+	  	CHECK_SMS=NO;
+	  }
+
+
+	  if(PREV_ALARM==NO && ALARM==YES){
+			send_alert();
+	  }
+	  PREV_ALARM = ALARM;
 
 //	  char znak;
 //	  LCD_GoTo(0, 0);

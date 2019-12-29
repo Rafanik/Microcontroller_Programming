@@ -26,6 +26,8 @@
 
 #define DEBOUNCE_TIME  10
 
+enum STATE ONE_TIME_PIN;
+int random(int, int);
 char keyboard_read(void);
 uint8_t PIN_write(char);
 void PIN_clear(void);
@@ -33,5 +35,8 @@ void PIN_display(void);
 void PIN_clear_display(void);
 uint8_t PIN_check(void);
 void date_update_from_GSM(RTC_HandleTypeDef);
+void check_one_time_PIN(void);
+void send_alert(void);
+
 
 #endif /* __PMIK_H */

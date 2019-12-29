@@ -39,9 +39,11 @@ extern "C" {
 /* USER CODE BEGIN ET */
 enum STATE { YES = 1, NO = 0};
 enum STATE DISPLAY;
+enum STATE PREV_ALARM;
 enum STATE CHECK_PIN;
 enum STATE CORRECT_PIN;
 enum STATE DATE;
+enum STATE CHECK_SMS;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

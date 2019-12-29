@@ -46,6 +46,8 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 enum DEBOUNCING {NONE=0, ONE=1, TWO=2} DEBOUNCE = NONE;
+uint8_t minute = 0;
+uint8_t checking_period = 10;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -253,9 +255,11 @@ void TIM4_IRQHandler(void)
 	buzzer_toggle();
 	if(buzzerCount++ == ALARM_TIME )
 	{
+
 		ALARM = NO;
 		buzzerCount = 0;
 		buzzer_off();
+
 	}
   }
 
@@ -313,7 +317,11 @@ void RTC_Alarm_IRQHandler(void)
   /* USER CODE END RTC_Alarm_IRQn 0 */
   HAL_RTC_AlarmIRQHandler(&hrtc);
   /* USER CODE BEGIN RTC_Alarm_IRQn 1 */
-
+++minute;
+if(minute==checking_period){
+	CHECK_SMS=1;
+	minute=0;
+}
   /* USER CODE END RTC_Alarm_IRQn 1 */
 }
 

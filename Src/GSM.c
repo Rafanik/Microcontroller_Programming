@@ -65,7 +65,6 @@ uint8_t GSM_SendCommandAndCopyResponse(unsigned char* command, unsigned char* be
 			return 0;
 			}
 		}
-	xd = strstr((char*)GSM_buffer, "C");
 	start = strstr((char*)GSM_buffer, (char*)begin);
 	stop = strstr((char*)GSM_buffer, (char*)end);
 	*stop = '\0';
@@ -98,9 +97,9 @@ void GSM_Init(UART_HandleTypeDef* h){
 
 void GSM_SendSMS(unsigned char* number, unsigned char* message){
 
-	GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgf=1", (unsigned char*)"OK");
-	sprintf((char*)buffer, "at+cmgs=\"%s\"\n", number);
-	GSM_SendCommandAndWaitForResponse(buffer, (unsigned char*)">");
+	uint8_t x = GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgf=1", (unsigned char*)"OK");
+	sprintf((char*)buffer, "at+cmgs=\"%s\"", number);
+	uint8_t y = GSM_SendCommandAndWaitForResponse(buffer, (unsigned char*)">");
 
 	memset(buffer, 0, sizeof(buffer));
 	sprintf((char*)buffer, "%s%c", message, 0x1A);
@@ -134,27 +133,40 @@ void GSM_GetTime(char* hours, char* minutes, char* seconds){
 	  seconds[1]=response[18];
 }
 
-void GSM_ReadSMS(char* number, char* text){
+uint8_t GSM_ReadSMS(char* number, char* text){
 	  unsigned char response[30];
 	  int i = 0;
 	  int status = 0;
-	  while(	!status && i<20){
-		  status = GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgf=1", (unsigned char*)"OK");
+	  while(	!GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgf=1", (unsigned char*)"OK") && i<20){
 		  ++i;
 		};
+	  if(i==20) return 0;
 	  status = 0;
 	  i = 0;
-	  while(!status && i<20){
-		  status = GSM_SendCommandAndCopyResponse("at+cmgr=8", "\"\r\n", "\r\n\r\nOK", text);
+	  while(!GSM_SendCommandAndCopyResponse("at+cmgr=8", "\"\r\n", "\r\n\r\nOK", text) && i<20){
 		  ++i;
 	  };
+	  if(i==20) return 0;
 	  i = 0;
 	  status = 0;
 	  while(!status && i<20){
 		  status = GSM_SendCommandAndCopyResponse("at+cmgr=8", "READ\",\"", "\",\"\",\"", number);
 		  ++i;
 	  };
-
+	  if(i==20) {
+		  while(!status && i<20){
+		 		  status = GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgd=8", (unsigned char*)"OK");
+		 		  ++i;
+		 		};
+		  return 0;
+	  }
+	  status = 0;
+	  i = 0;
+	  while(	!status && i<20){
+	 		  status = GSM_SendCommandAndWaitForResponse((unsigned char*)"at+cmgd=8", (unsigned char*)"OK");
+	 		  ++i;
+	 		};
+	  return 1;
 
 }
 
