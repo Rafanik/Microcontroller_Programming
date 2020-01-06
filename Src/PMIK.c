@@ -1,6 +1,16 @@
-//******************************************************************************
-//  Biblioteka obsługująca alarm - buzzer i czujnik otwarcia drzwi
-//******************************************************************************
+/**
+  ******************************************************************************
+  * File Name          : PMIK.c
+  * Description        : Library handling basic system functions of project
+  * Authors			   : Rafał Szczepanik, Kacper Kaczmarek
+  * Project            : University of Warsaw Project for subject "Programming Microcontrollers in C"
+  * Github             : https://github.com/Rafanik/PMIK_microcontroller_programming
+  ******************************************************************************
+  *
+  * No rights reserved
+  *
+  ******************************************************************************
+  */
 
 
 #include "keyboard_com_08653.h"
@@ -65,27 +75,7 @@ void PIN_clear_display(){
 	LCD_WriteText(clear);
 }
 
-void PIN_display(){
-	LCD_Clear();
-	PIN[PIN_LENGTH]=0;
-	LCD_GoTo(0, 0);
-	LCD_WriteText((unsigned char *)"PODAJ PIN:");
-	LCD_GoTo(0, 1);
-	LCD_WriteText(PIN);
-}
-
-
-
-void PIN_clear(){
-	uint8_t i;
-	for(i=0;i<PIN_LENGTH;i++){
-		PIN[i]=0;
-	}
-	PINCounter=0;
-}
-
 uint8_t PIN_write(char character){
-	//uint8_t temp;
 	if( (character>='0' && character <= '9') || character=='*' || character=='#')
 	{
 		if(PINCounter>=PIN_LENGTH)
@@ -99,6 +89,23 @@ uint8_t PIN_write(char character){
 		return 1;
 	else
 		return 0;
+}
+
+void PIN_clear(){
+	uint8_t i;
+	for(i=0;i<PIN_LENGTH;i++){
+		PIN[i]=0;
+	}
+	PINCounter=0;
+}
+
+void PIN_display(){
+	LCD_Clear();
+	PIN[PIN_LENGTH]=0;
+	LCD_GoTo(0, 0);
+	LCD_WriteText((unsigned char *)"PODAJ PIN:");
+	LCD_GoTo(0, 1);
+	LCD_WriteText(PIN);
 }
 
 uint8_t PIN_check(){
@@ -146,8 +153,7 @@ void send_alert(){
 	GSM_GetDate(year, month, day);
 	GSM_GetTime(hours, minutes, seconds);
 	sprintf(alert, "Door alarm!!! %s:%s, %s-%s-20%s",hours, minutes, day, month, year );
-	HAL_Delay(100);
-	GSM_SendSMS("607933865", alert);
+	GSM_SendSMS("798304694", alert);
 }
 
 void check_one_time_PIN(){

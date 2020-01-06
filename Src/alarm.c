@@ -1,6 +1,16 @@
-//******************************************************************************
-//  Biblioteka obsługująca alarm - buzzer i czujnik otwarcia drzwi
-//******************************************************************************
+/**
+  ******************************************************************************
+  * File Name          : alarm.c
+  * Description        : Library handling alarm functions
+  * Authors			   : Rafał Szczepanik, Kacper Kaczmarek
+  * Project            : University of Warsaw Project for subject "Programming Microcontrollers in C"
+  * Github             : https://github.com/Rafanik/PMIK_microcontroller_programming
+  ******************************************************************************
+  *
+  * No rights reserved
+  *
+  ******************************************************************************
+  */
 
 
 #include "alarm.h"

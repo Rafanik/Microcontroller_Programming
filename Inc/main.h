@@ -1,19 +1,16 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
+  * File Name          : main.h
+  * Description        : This file contains all variables and macros for
+  *                      the main program body
+  * Authors			   : Rafał Szczepanik, Kacper Kaczmarek
+  * Project            : University of Warsaw Project for subject
+  * 					 "Programming Microcontrollers in C"
+  * Github             : https://github.com/Rafanik/PMIK_microcontroller_programming
   ******************************************************************************
-  * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * No rights reserved
   *
   ******************************************************************************
   */
@@ -38,12 +35,13 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 enum STATE { YES = 1, NO = 0};
-enum STATE DISPLAY;
-enum STATE PREV_ALARM;
-enum STATE CHECK_PIN;
-enum STATE CORRECT_PIN;
-enum STATE DATE;
-enum STATE CHECK_SMS;
+enum STATE DISPLAY; // if PIN should be displayed
+enum STATE PREV_ALARM; // it is previous alarm state in while loop
+enum STATE CHECK_PIN; // if uC in while loop should check for correct PIN
+enum STATE CORRECT_PIN; // if PIN is correct
+enum STATE DATE;// if date should be displayed
+enum STATE CHECK_SMS; // if system in while lopp should check sms for new one-time PIN
+extern enum STATE ALARM; // enum from alarm.c. if system should run alarm
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

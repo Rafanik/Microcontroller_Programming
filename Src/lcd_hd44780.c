@@ -1,14 +1,22 @@
-//******************************************************************************
-//    THE SOFTWARE INCLUDED IN THIS FILE IS FOR GUIDANCE ONLY.
-//    AUTHOR SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
-//    OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-//    FROM USE OF THIS SOFTWARE.
-//
-//    PROGRAM ZAWARTY W TYM PLIKU PRZEZNACZONY JEST WYLACZNIE
-//    DO CELOW SZKOLENIOWYCH. AUTOR NIE PONOSI ODPOWIEDZIALNOSCI
-//    ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
-//    WYNIKLE Z JEGO WYKORZYSTANIA.
-//******************************************************************************
+/**
+  ******************************************************************************
+  * File Name          : lcd_hd44780.c
+  * Description        : Library handling keyboard_com_08653 functions
+  * Authors			   : Unknown - adapted by Rafal Szczepanik, Kacper Kaczmarek
+  ******************************************************************************
+  *
+  *     THE SOFTWARE INCLUDED IN THIS FILE IS FOR GUIDANCE ONLY.
+  *     AUTHOR SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
+  *     OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  *     FROM USE OF THIS SOFTWARE.
+  *
+  *     PROGRAM ZAWARTY W TYM PLIKU PRZEZNACZONY JEST WYLACZNIE
+  *     DO CELOW SZKOLENIOWYCH. AUTOR NIE PONOSI ODPOWIEDZIALNOSCI
+  *     ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
+  *     WYNIKLE Z JEGO WYKORZYSTANIA.
+  *
+  ******************************************************************************
+  */
 
 #include "lcd_hd44780.h"
 #include "stm32f4xx_hal.h"
@@ -18,35 +26,12 @@ GPIO_InitTypeDef GPIO_InitStructure;
 //-----------------------------------------------------------------------------
 void LCD_WriteNibble(unsigned char nibbleToWrite)
 {
-  HAL_GPIO_WritePin(LCD_GPIO, LCD_EN, SET);
-//  if((nibbleToWrite & 0x01)>0){
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D4, SET);
-//  }else{
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D4, RESET);
-//  }
-//  if((nibbleToWrite & 0x02)>0){
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D5, SET);
-//  }else{
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D5, RESET);
-//  }
-//  if((nibbleToWrite & 0x04)>0){
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D6, SET);
-//  }else{
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D6, RESET);
-//  }
-//  if((nibbleToWrite & 0x08)>0){
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D7, SET);
-//  }else{
-//	  HAL_GPIO_WritePin(LCD_GPIO, LCD_D7, RESET);
-//  }
-
-
+    HAL_GPIO_WritePin(LCD_GPIO, LCD_EN, SET);
 	HAL_GPIO_WritePin(LCD_GPIO, LCD_D4, (nibbleToWrite & 0x01)>0);
 	HAL_GPIO_WritePin(LCD_GPIO, LCD_D5, (nibbleToWrite & 0x02)>0);
 	HAL_GPIO_WritePin(LCD_GPIO, LCD_D6, (nibbleToWrite & 0x04)>0);
 	HAL_GPIO_WritePin(LCD_GPIO, LCD_D7, (nibbleToWrite & 0x08)>0);
-	//HAL_Delay(1);
-  HAL_GPIO_WritePin(LCD_GPIO, LCD_EN, RESET);
+    HAL_GPIO_WritePin(LCD_GPIO, LCD_EN, RESET);
 }
 
 
@@ -212,7 +197,6 @@ void LCD_Initialize(void)
   //for(delayCnt = 0; delayCnt < 300000; delayCnt++);  // >15ms delay
   HAL_Delay(16);
   for(i = 0; i < 3; i++) { // 3x 0x03
-    //for(delayCnt = 0; delayCnt < 30000; delayCnt++); // >4.1ms delay
 	HAL_Delay(5);
     LCD_WriteNibble(0x03);
   }

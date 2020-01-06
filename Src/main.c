@@ -1,18 +1,14 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
+  * File Name          : main.c
+  * Description        : Main program body
+  * Authors			   : Rafał Szczepanik, Kacper Kaczmarek
+  * Project            : University of Warsaw Project for subject "Programming Microcontrollers in C"
+  * Github             : https://github.com/Rafanik/PMIK_microcontroller_programming
   ******************************************************************************
-  * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * No rights reserved
   *
   ******************************************************************************
   */
@@ -28,7 +24,7 @@
 #include "alarm.h"
 #include "GSM.h"
 #include "date_time.h"
-
+#include "stdio.h"
 
 /* USER CODE END Includes */
 
@@ -117,23 +113,21 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+  // init states
   DISPLAY = NO;
   CHECK_PIN = NO;
   CORRECT_PIN = NO;
   DATE = YES;
 
+  // init components
   date_time_init(&hrtc);
   LCD_Initialize();
   buzzer_off();
   GSM_Init(&huart1);
   date_update_from_GSM(hrtc);
-  HAL_Delay(1000);
-  GSM_SendSMS("607933865", "Alarm is active...");
+  HAL_Delay(1000); // wait for gsm init
+  GSM_SendSMS("798304694", "Alarm is active..."); // testing sms
 
-
-//unsigned char text[40];
-//unsigned char number[40];
-//  uint8_t sms = GSM_ReadSMS(number, text);
 
   /* USER CODE END 2 */
 
@@ -141,51 +135,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  sms = GSM_ReadSMS(number, text);
-//	  if(sms==1){
-//		  GSM_SendSMS(text, "PIN: 5554");
-//	  }
-
-
-
-//
-//	  char enter= 10;
-//	  char ctrlz= 26;
-//
-//
-//	  HAL_UART_Transmit(&huart1, &enter, 1, 100);
-//
-//	  HAL_Delay(5000);
-//
-//	  //char command1[] = "at+cmgf=1"
-//	  HAL_UART_Transmit(&huart1,"at+cmgf=1", 9, 100);
-//
-//	  HAL_UART_Transmit(&huart1, &enter, 1, 100);
-//
-//	  HAL_Delay(5000);
-//
-//	  HAL_UART_Transmit(&huart1,"at+cmgs=\"798304694\"", 19, 100);
-//
-//	  HAL_UART_Transmit(&huart1, &enter, 1, 100);
-//
-//	  HAL_Delay(5000);
-//
-//	  HAL_UART_Transmit(&huart1,"elo ziom", 8, 100);
-//
-//	  HAL_UART_Transmit(&huart1, &ctrlz, 1, 100);
-
-//	  HAL_Delay(5000);
-
-
-
-// Default screen to display
-	  if(DISPLAY == YES){
+	  if(DISPLAY == YES)
+	  {
 		  PIN_display();
 		  DISPLAY = NO;
 	  }
-// Check PIN if all signs are typed
+	  // Check PIN if all signs are typed
 	  if(CHECK_PIN == YES){
 		  if(PIN_check()){
+			  // PIN is correct
 			  LCD_Clear();
 			  LCD_WriteText((unsigned char *)"Poprawny PIN");
      		  PIN_clear_display();
@@ -194,46 +152,40 @@ int main(void)
      		 //HAL_UART_Transmit(&huart1, (unsigned char *)"Poprawny PIN\n\r", 15, 1000);
 
 		  }else{
+			  // PIN is incorrect
 			  LCD_Clear();
 			  LCD_WriteText((unsigned char *)"Bledny PIN");
      		  PIN_clear_display();
      		  CORRECT_PIN = NO;
 		  }
+		  // no matter what buffor for PIN should be cleared and states reseted
 		  PIN_clear();
 		  CHECK_PIN = NO;
 		  DISPLAY = NO;
 	  }
-// Checking if SMS was received
+
+	  // Checking if SMS for one-time PIN was received, every 30s
 	  if(CHECK_SMS == YES && ALARM==NO && DATE==YES){
-	  	check_one_time_PIN();
-	  	CHECK_SMS=NO;
+		  // check_sms is YES every 30s
+		  // alarm should be inactive, because it could disturb sending sms
+		  // date yes, because it shouldnt distrub typing PIN
+	  	check_one_time_PIN(); // sending sms to new one-time PIN owner if sms from master is received
+	  	CHECK_SMS=NO; // to prevent stepping in this function every time
 	  }
 
 
 	  if(PREV_ALARM==NO && ALARM==YES){
-			send_alert();
+		  // we wait for situation when it was no alarm and now it is
+		  // it prevents sending multiple sms
+			send_alert(); // sending message to master about alarm
 	  }
 	  PREV_ALARM = ALARM;
 
-//	  char znak;
-//	  LCD_GoTo(0, 0);
-//	  znak = keyboard_read();
-//	  LCD_WriteText(&znak);
-	  //HAL_UART_Transmit(&huart1, &znak, 1, 100);
-	  //HAL_GPIO_TogglePin(COL2_GPIO_Port, COL2_Pin);
-	  //HAL_Delay(1000);
-//	  if(HAL_GPIO_ReadPin(ROW1_GPIO_Port, ROW1_Pin)==0){
-//		  LCD_GoTo(0, 0);
-//		  LCD_WriteText((unsigned char*)"2  ");
-//	  }else{
-//		  LCD_GoTo(0, 0);
-//		  LCD_WriteText((unsigned char*)"---");
-//	  }
+  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+    /* USER CODE END 3 */
 }
 
 /**

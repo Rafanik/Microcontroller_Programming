@@ -1,14 +1,18 @@
-//******************************************************************************
-//    THE SOFTWARE INCLUDED IN THIS FILE IS FOR GUIDANCE ONLY.
-//    AUTHOR SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
-//    OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-//    FROM USE OF THIS SOFTWARE.
-//
-//    PROGRAM ZAWARTY W TYM PLIKU PRZEZNACZONY JEST WYLACZNIE
-//    DO CELOW SZKOLENIOWYCH. AUTOR NIE PONOSI ODPOWIEDZIALNOSCI
-//    ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
-//    WYNIKLE Z JEGO WYKORZYSTANIA.
-//******************************************************************************
+/**
+  ******************************************************************************
+  * File Name          : date_time.h
+  * Description        : This file contains all the functions prototypes for
+  *                      the date_time library
+  * Authors			   : Rafał Szczepanik, Kacper Kaczmarek
+  * Project            : University of Warsaw Project for subject
+  * 					 "Programming Microcontrollers in C"
+  * Github             : https://github.com/Rafanik/PMIK_microcontroller_programming
+  ******************************************************************************
+  *
+  * No rights reserved
+  *
+  ******************************************************************************
+  */
 #ifndef __DATE_TIME_H
 #define __DATE_TIME_H
 

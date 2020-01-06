@@ -1,14 +1,24 @@
-//******************************************************************************
-//    THE SOFTWARE INCLUDED IN THIS FILE IS FOR GUIDANCE ONLY.
-//    AUTHOR SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
-//    OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-//    FROM USE OF THIS SOFTWARE.
-//
-//    PROGRAM ZAWARTY W TYM PLIKU PRZEZNACZONY JEST WYLACZNIE
-//    DO CELOW SZKOLENIOWYCH. AUTOR NIE PONOSI ODPOWIEDZIALNOSCI
-//    ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
-//    WYNIKLE Z JEGO WYKORZYSTANIA.
-//******************************************************************************
+/**
+  ******************************************************************************
+  * File Name          : lcd_hd44780.h
+  * Description        : This file contains all the functions prototypes for
+  *                      the lcd_hd44780 library
+  * Authors			   : Unknown
+  ******************************************************************************
+  *
+  *     THE SOFTWARE INCLUDED IN THIS FILE IS FOR GUIDANCE ONLY.
+  *     AUTHOR SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
+  *     OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  *     FROM USE OF THIS SOFTWARE.
+  *
+  *     PROGRAM ZAWARTY W TYM PLIKU PRZEZNACZONY JEST WYLACZNIE
+  *     DO CELOW SZKOLENIOWYCH. AUTOR NIE PONOSI ODPOWIEDZIALNOSCI
+  *     ZA ZADNE EWENTUALNE, BEZPOSREDNIE I POSREDNIE SZKODY
+  *     WYNIKLE Z JEGO WYKORZYSTANIA.
+  *
+  ******************************************************************************
+  */
+
 #ifndef __LCD_HD44780_H
 #define __LCD_HD44780_H
 #include "main.h"
