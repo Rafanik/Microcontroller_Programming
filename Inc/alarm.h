@@ -30,15 +30,36 @@
 
 extern enum STATE ALARM;
 
-
+/**
+ * Indicates how many times should buzzer beep when alarming
+ */
 uint8_t buzzerCount;
+/**
+ * Used to debounce sensor
+ */
 uint8_t openCount;
+/**
+ * Used to debounce sensor
+ */
 uint8_t closeCount;
 
+/**
+ * Switching on buzzer
+ */
 void buzzer_on();
+/**
+ * Switching off buzzer
+ */
 void buzzer_off();
+/**
+ * Toggling buzzer state
+ */
 void buzzer_toggle();
 
+/**
+ * Checking if door is open or closed
+ * @return door state
+ */
 GPIO_PinState sensor_read();
 
 #endif /* __ALARM_H */

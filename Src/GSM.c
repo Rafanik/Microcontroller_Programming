@@ -14,6 +14,7 @@
 
 #include "GSM.h"
 #include "string.h"
+#include "stdio.h"
 
 void GSM_Listen(){
 	HAL_UART_Receive_IT(huart, &GSM_Listener, 1);
